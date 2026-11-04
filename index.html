@@ -138,9 +138,37 @@
       box-shadow: 0 11px 26px rgba(79,125,120,.23);
     }
 
-    .next-button:focus-visible {
+    .next-button:focus-visible, .music-button:focus-visible {
       outline: 3px solid #a66e86;
       outline-offset: 4px;
+    }
+
+    .music-button {
+      display: block;
+      margin: 12px auto 0;
+      padding: 11px 24px;
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 999px;
+      background: rgba(255, 241, 246, .9);
+      color: #87566d;
+      font: inherit;
+      font-size: .94rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(79,125,120,.12);
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .music-button:hover {
+      transform: translateY(-2px);
+      background: #fff7fa;
+    }
+
+    .music-note {
+      margin: 8px 0 0;
+      color: #956b7d;
+      font-size: .78rem;
+      text-align: center;
     }
 
     @media (max-width: 520px) {
@@ -282,9 +310,38 @@
       </section>
     </div>
     <button class="next-button" id="nextButton" type="button" aria-controls="birthdayCard" aria-expanded="false">Next <span aria-hidden="true">→</span></button>
+    <button class="music-button" id="musicButton" type="button" aria-pressed="false">♫ Play birthday song</button>
+    <p class="music-note" id="musicNote">A little music to make your day sweeter</p>
+    <audio id="birthdaySong" src="birthday-song.mp3" preload="metadata" loop></audio>
   </main>
 
   <script>
+    const birthdaySong = document.getElementById("birthdaySong");
+    const musicButton = document.getElementById("musicButton");
+    const musicNote = document.getElementById("musicNote");
+
+    musicButton.addEventListener("click", async () => {
+      if (birthdaySong.paused) {
+        try {
+          await birthdaySong.play();
+          musicButton.innerHTML = 'Ⅱ Pause music';
+          musicButton.setAttribute("aria-pressed", "true");
+          musicNote.textContent = "Now playing your birthday song ♫";
+        } catch (error) {
+          musicNote.textContent = "Couldn't play the song. Please check that birthday-song.mp3 was uploaded.";
+        }
+      } else {
+        birthdaySong.pause();
+        musicButton.innerHTML = '♫ Play birthday song';
+        musicButton.setAttribute("aria-pressed", "false");
+        musicNote.textContent = "Music paused";
+      }
+    });
+
+    birthdaySong.addEventListener("ended", () => {
+      musicButton.innerHTML = '♫ Play birthday song';
+      musicButton.setAttribute("aria-pressed", "false");
+    });
     const birthdayCard = document.getElementById("birthdayCard");
     const nextButton = document.getElementById("nextButton");
     nextButton.addEventListener("click", () => {
